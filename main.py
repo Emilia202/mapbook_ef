@@ -10,18 +10,18 @@ class User:
         self.surname = surname
         self.location = location
         self.posts = posts
-        self.coordinates = self.get_coordinate()
+        self.coordinates = self.get_coordinates()
         self.marker=map_widget.set_marker(self.coordinates[0], self.coordinates[1], text=f'{self.name} {self.surname}')
 
-    def get_coordinate(self) -> list:
+    def get_coordinates(self) -> list:
         import requests
         from bs4 import BeautifulSoup
         adres_url: str = f'https://pl.wikipedia.org/wiki/{self.location}'
         response_html = BeautifulSoup(requests.get(adres_url).text, 'html.parser')
 
         return [
-            float(response_html.select('.longitude')[1].text.replace(',', '.')),
             float(response_html.select('.latitude')[1].text.replace(',', '.')),
+            float(response_html.select('.longitude')[1].text.replace(',', '.')),
         ]
 
 
@@ -107,7 +107,7 @@ def show_user_details():
     label_szczegoly_obiektu_post_wartosc.config(text=users[i].posts)
 
     map_widget.set_zoom(15)
-    map_widget.set_position(users[i].coordinates)
+    map_widget.set_position(users[i].coordinates[0], users[i].coordinates[1])
 
 root = Tk()
 root.geometry("1200x700")
@@ -125,10 +125,10 @@ ramka_mapa.grid(row=2, column=0, columnspan=2)
 
 # ramka_lista_obiektow
 label_lista_obiektow = Label(ramka_lista_obiektow, text='Lista użytkowników:')
-label_lista_obiektow.grid(row=0, column=0, columnspan=3)
+label_lista_obiektow.grid(row=0, column=0)
 
 listbox_lista_obiektow = Listbox(ramka_lista_obiektow, width=50, height=10)
-listbox_lista_obiektow.grid(row=1, column=0)
+listbox_lista_obiektow.grid(row=1, column=0, columnspan=3)
 
 button_pokaz_szczegoly = Button(ramka_lista_obiektow, text='Pokaż szczegóły', command=show_user_details)
 button_pokaz_szczegoly.grid(row=2, column=0)
@@ -198,9 +198,9 @@ label_szczegoly_obiektu_post_wartosc.grid(row=1, column=7)
 
 # ramka_mapa
 
-map_widget = tkintermapview.TkinterMapView(ramka_mapa, width=800, height=400, corner_radius=0)
-map_widget.grid(row=0, column=0, columnspan=3)
-map_widget.set_position(52.23, 21.0)
+map_widget = tkintermapview.TkinterMapView(ramka_mapa, width=1200, height=400, corner_radius=0)
+map_widget.grid(row=0, column=0, columnspan=2)
+map_widget.set_position (52.23,21.0)
 map_widget.set_zoom(6)
 
 root.mainloop()
